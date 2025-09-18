@@ -1,10 +1,10 @@
-import { MCPIntegration } from './mcp-integration.js';
+import { RealMCPIntegration } from './real-mcp-integration.js';
 
 export class YouTubeCollectorRealTime {
   constructor() {
     this.channelCache = new Map();
     this.videoCache = new Map();
-    this.mcpIntegration = new MCPIntegration();
+    this.realMCP = new RealMCPIntegration();
   }
 
   async getChannelMetrics(channelIdOrHandle) {
@@ -42,7 +42,7 @@ export class YouTubeCollectorRealTime {
       console.log(`🔍 Searching for channel handle: ${channelIdOrHandle}`);
       
       try {
-        const searchResults = await this.mcpIntegration.searchVideos(channelIdOrHandle, 5);
+        const searchResults = await this.realMCP.searchVideos(channelIdOrHandle, 5);
         
         if (searchResults && searchResults.length > 0) {
           const exactMatch = searchResults.find(result => 
@@ -57,6 +57,7 @@ export class YouTubeCollectorRealTime {
         }
       } catch (error) {
         console.error('Error searching for channel:', error);
+        throw new Error(`Failed to resolve channel handle: ${channelIdOrHandle}. ${error.message}`);
       }
     }
     
@@ -67,22 +68,22 @@ export class YouTubeCollectorRealTime {
 
   async getChannelStatistics(channelIds) {
     console.log('🔴 LIVE: Getting real channel statistics...');
-    return await this.mcpIntegration.getChannelStatistics(channelIds);
+    return await this.realMCP.getChannelStatistics(channelIds);
   }
 
   async getChannelTopVideos(channelId, maxResults = 10) {
     console.log('🔴 LIVE: Getting real top videos...');
-    return await this.mcpIntegration.getChannelTopVideos(channelId, maxResults);
+    return await this.realMCP.getChannelTopVideos(channelId, maxResults);
   }
 
   async searchVideos(query, maxResults = 10) {
     console.log(`🔴 LIVE: Searching real YouTube videos for: ${query}`);
-    return await this.mcpIntegration.searchVideos(query, maxResults);
+    return await this.realMCP.searchVideos(query, maxResults);
   }
 
   async getTrendingVideos(categoryId = null, maxResults = 10) {
     console.log('🔴 LIVE: Getting real trending videos...');
-    return await this.mcpIntegration.getTrendingVideos(categoryId, maxResults);
+    return await this.realMCP.getTrendingVideos(categoryId, maxResults);
   }
 
   async getVideoDetails(videoIds) {

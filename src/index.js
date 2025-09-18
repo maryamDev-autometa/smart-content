@@ -3,7 +3,7 @@ import cors from 'cors';
 import path from 'path';
 import { fileURLToPath } from 'url';
 import { YouTubeCollectorRealTime } from './modules/youtube-collector-realtime.js';
-import { ExploriumCollectorRealTime } from './modules/explorium-collector-realtime.js';
+import { ExploriumCollectorReal } from './modules/explorium-collector-real.js';
 import { AIAnalyzer } from './modules/ai-analyzer.js';
 import { MarkdownExporter } from './utils/markdown-exporter.js';
 
@@ -19,7 +19,7 @@ app.use(express.static(path.join(__dirname, 'ui')));
 
 // Initialize real-time data collectors
 const youtubeCollector = new YouTubeCollectorRealTime();
-const exploriumCollector = new ExploriumCollectorRealTime();
+const exploriumCollector = new ExploriumCollectorReal();
 const aiAnalyzer = new AIAnalyzer();
 const markdownExporter = new MarkdownExporter();
 
@@ -58,26 +58,13 @@ app.post('/api/analyze', async (req, res) => {
     }
 
     try {
-      if (channelName) {
-        console.log('Collecting Explorium data...');
+      if (results.youtubeData) {
+        console.log('🔴 SMART: Analyzing audience companies based on YouTube content...');
+        results.exploriumData = await exploriumCollector.getAudienceCompanyAnalysis(results.youtubeData);
+        console.log('✅ Smart audience analysis completed');
+      } else if (channelName) {
+        console.log('⚠️ Fallback: Using basic business lookup...');
         results.exploriumData = await exploriumCollector.getCreatorBusinessData(channelName, channelDomain);
-        
-        if (results.exploriumData?.businessData) {
-          console.log('Getting competitor analysis...');
-          const industry = results.exploriumData.businessData[0]?.industry || 'Technology';
-          const competitors = await exploriumCollector.getCompetitorAnalysis(industry);
-          results.exploriumData.competitors = competitors;
-
-          console.log('Getting audience insights...');
-          const businessIds = results.exploriumData.businessData.map(b => b.business_id);
-          const audience = await exploriumCollector.getAudienceInsights(businessIds);
-          results.exploriumData.audience = audience;
-
-          console.log('Getting market trends...');
-          const trends = await exploriumCollector.getMarketTrends(industry);
-          results.exploriumData.trends = trends;
-        }
-        console.log('Explorium data collected');
       }
     } catch (error) {
       console.warn('Explorium data collection failed:', error.message);
