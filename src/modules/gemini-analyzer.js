@@ -6,7 +6,7 @@
 
 export class GeminiAnalyzer {
     constructor(apiKey = 
-        'AIzaSyCXnqncmxWV0rWIEpkWqXWeUevTJ0bpM0I'
+      null
     ) {
         this.apiKey = apiKey || process.env.GEMINI_API_KEY;
         this.baseUrl = 'https://generativelanguage.googleapis.com/v1beta/models/gemini-1.5-flash-latest:generateContent';
