@@ -7,7 +7,10 @@
   "scripts": {
     "start": "node src/index.js",
     "dev": "node --watch src/index.js",
-    "test": "node --test src/**/*.test.js"
+    "test": "node --test src/**/*.test.js",
+    "refresh": "node scripts/refresh-data.js",
+    "refresh:ailabs": "node scripts/refresh-data.js @AILABS-393",
+    "refresh:google": "node scripts/refresh-data.js @GoogleDevelopers"
   },
   "dependencies": {
     "axios": "^1.6.0",
